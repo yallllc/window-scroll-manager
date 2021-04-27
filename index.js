@@ -4,6 +4,7 @@
   var instance = null;
   var instancesCount = 0;
   var ticking = false;
+  var lerpElement = null;
 
   var EVENT_NAME = 'window-scroll';
 
@@ -51,6 +52,9 @@
     // Increase reference count
     instancesCount++;
 
+    // Try to find the lerper
+    lerpElement = document.getElementById('lerp');
+
     // If singleton instance exists, return it rather than creating a new one
     if (instance) {
       return instance;
@@ -87,7 +91,7 @@
     instancesCount = 0;
   };
 
-  ScrollManager.prototype.getScrollPosition = function() {
+  ScrollManager.prototype.getScrollPosition = function(lerpOffset) {
     // Get scroll position, with IE fallback
     var scrollPositionY = window.scrollY || document.documentElement.scrollTop;
     var scrollPositionX = window.scrollX || document.documentElement.scrollLeft;
@@ -100,6 +104,10 @@
       scrollPositionX = 0;
     }
 
+    if (lerpOffset) {
+      scrollPositionY -= lerpOffset;
+    }
+    
     return {
       // Alias for scrollPositionY for backwards compatibility
       scrollPosition: scrollPositionY,
@@ -113,15 +121,20 @@
     if (!ticking) {
       ticking = true;
 
+      var lerpOffset = 0;
+      if (lerpElement) {
+        lerpOffset = parseInt(lerpElement.style.top, 10);
+      }
+
       var event;
 
       if (supportsCustomEvents) {
         event = new CustomEvent(EVENT_NAME, {
-          detail: this.getScrollPosition()
+          detail: this.getScrollPosition(lerpOffset)
         });
       } else {
         event = document.createEvent('CustomEvent');
-        event.initCustomEvent(EVENT_NAME, false, false, this.getScrollPosition());
+        event.initCustomEvent(EVENT_NAME, false, false, this.getScrollPosition(lerpOffset));
       }
 
       window.dispatchEvent(event);
