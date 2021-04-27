@@ -123,7 +123,7 @@
 
       var lerpOffset = 0;
       if (lerpElement) {
-        lerpOffset = parseInt(lerpElement.style.top, 10);
+        lerpOffset = parseInt(lerpElement.attributes.l.value, 10);
       }
 
       var event;
