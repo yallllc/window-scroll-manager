@@ -105,7 +105,7 @@
     }
 
     if (lerpOffset) {
-      scrollPositionY -= lerpOffset;
+      scrollPositionY = lerpOffset;
     }
     
     return {
